@@ -2,7 +2,7 @@
 import OneCustomerInfoCard from "@/app/components/one_customer_info_card.jsx";
 import fetchCustomer from "./fetchCustomer";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";  //Suspense追加
 
 export default function ConfirmPage() {
   const router = useRouter();
@@ -29,5 +29,14 @@ export default function ConfirmPage() {
         </button>
       </div>
     </>
+  );
+}
+
+// 以下追加（Suspense）
+export default function ConfirmPage() {
+  return (
+    <Suspense>
+      <ConfirmPageInner />
+    </Suspense>
   );
 }
