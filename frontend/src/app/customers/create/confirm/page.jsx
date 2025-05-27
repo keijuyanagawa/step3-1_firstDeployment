@@ -4,7 +4,8 @@ import fetchCustomer from "./fetchCustomer";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState, Suspense } from "react";  //Suspense追加
 
-export default function ConfirmPage() {
+// export defaultを削除
+function ConfirmPageInner() {
   const router = useRouter();
   const customer_id = useSearchParams().get("customer_id");
   const [customer, setCustomer] = useState(null);
