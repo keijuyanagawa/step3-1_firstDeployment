@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+# 追加
+.env.*
+venv/
+.sqlite3
+
+# Node
+node_modules/
+.next/
+.env.local
+# 追加
+.env.development
+.env.production
+
+# その他
+*.log
+.DS_Store
