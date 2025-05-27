@@ -25,7 +25,7 @@ jobs:
         with:
           app-name: app-001-step3-1-suzuyu-node-36
           publish-profile: ${{ secrets.AZURE_NEXTJS_PUBLISH_PROFILE }}
-          package: .
+          package: ./frontend
 
   deploy-backend:
     runs-on: ubuntu-latest
@@ -47,4 +47,4 @@ jobs:
         with:
           app-name: app-001-step3-1-suzuyu-py-36
           publish-profile: ${{ secrets.AZURE_FASTAPI_PUBLISH_PROFILE }}
-          package: .
+          package: ./backend
