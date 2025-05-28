@@ -26,23 +26,23 @@ jobs:
           publish-profile: ${{ secrets.AZURE_NEXTJS_PUBLISH_PROFILE }}
           package: ./frontend
 
-deploy-backend:
-  runs-on: ubuntu-latest
-  steps:
-    - uses: actions/checkout@v3
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.11'
-    - name: Install dependencies
-      run: |
-        cd backend
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-    - name: Deploy to Azure Web App
-      uses: azure/webapps-deploy@v2
-      with:
-        app-name: app-001-step3-1-suzuyu-py-36
-        publish-profile: ${{ secrets.AZURE_FASTAPI_PUBLISH_PROFILE }}
-        package: ./backend
+  deploy-backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: |
+          cd backend
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: app-001-step3-1-suzuyu-py-36
+          publish-profile: ${{ secrets.AZURE_FASTAPI_PUBLISH_PROFILE }}
+          package: ./backend
 
