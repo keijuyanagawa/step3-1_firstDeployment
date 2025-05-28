@@ -2,48 +2,83 @@ name: Deploy Next.js & FastAPI to Azure
 
 on:
   push:
-    branches: [main]
+    branches: [ main ]
+  workflow_dispatch:
 
+################################
+#  Frontend (Next.js) Job
+################################
 jobs:
   deploy-frontend:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
-      - name: Install dependencies
+
+      - name: Install deps
         run: npm ci
         working-directory: ./frontend
+
       - name: Build
         run: npm run build
         working-directory: ./frontend
-      - name: Deploy to Azure Web App
+
+      - name: Deploy Next.js to Azure
         uses: azure/webapps-deploy@v2
         with:
           app-name: app-001-step3-1-suzuyu-node-36
           publish-profile: ${{ secrets.AZURE_NEXTJS_PUBLISH_PROFILE }}
-          package: ./frontend
+          package: ./frontend   # ← .next も含めて丸ごと送る
+
+################################
+#  Backend (FastAPI) – build & deploy
+################################
+  build-backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Package backend folder only
+        run: |
+          cd backend
+          zip -r ../backend.zip .
+
+      - name: Upload backend artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-zip
+          path: backend.zip
 
   deploy-backend:
     runs-on: ubuntu-latest
+    needs: build-backend
     steps:
-      - uses: actions/checkout@v3
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Download artifact
+        uses: actions/download-artifact@v4
         with:
-          python-version: '3.11'
-      - name: Install dependencies
-        run: |
-          cd backend
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-      - name: Deploy to Azure Web App
+          name: backend-zip
+
+      - name: Unzip
+        run: unzip backend.zip -d backend
+
+      # (任意) App Settings を更新して Oryx ビルドを有効化
+      - name: Ensure SCM_DO_BUILD_DURING_DEPLOYMENT=true
+        uses: azure/appservice-settings@v1
+        with:
+          app-name: app-001-step3-1-suzuyu-py-36
+          app-settings-json: |
+            [
+              { "name": "SCM_DO_BUILD_DURING_DEPLOYMENT", "value": "true" }
+            ]
+
+      - name: Deploy FastAPI to Azure
         uses: azure/webapps-deploy@v2
         with:
           app-name: app-001-step3-1-suzuyu-py-36
           publish-profile: ${{ secrets.AZURE_FASTAPI_PUBLISH_PROFILE }}
           package: ./backend
-          build-during-deployment: true
-
+          # backend に requirements.txt がある前提
